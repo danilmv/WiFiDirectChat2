@@ -5,15 +5,39 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <LinearLayout
+        android:id="@+id/linear_Layout"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:orientation="vertical"
+        android:minHeight="200dp"
+        app:layout_constraintBottom_toTopOf="@id/frame_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        >
+        <FrameLayout
+            android:id="@+id/frag_list"
+            android:layout_width="match_parent"
+            android:layout_height="100dp">
+        </FrameLayout>
+        <FrameLayout
+            android:id="@+id/frag_detail"
+            android:layout_width="match_parent"
+            android:layout_height="100dp">
+        </FrameLayout>
+    </LinearLayout>
+
     <FrameLayout
         android:id="@+id/frame_text"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:minHeight="300dp"
+        android:layout_height="200dp"
+        android:minHeight="200dp"
+        android:maxHeight="200dp"
         app:layout_constraintBottom_toTopOf="@+id/edit_text_message"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/linear_Layout">
 
         <ScrollView
             android:id="@+id/scroll_text"

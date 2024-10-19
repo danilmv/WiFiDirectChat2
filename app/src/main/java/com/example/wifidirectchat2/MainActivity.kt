@@ -1,13 +1,16 @@
 package com.example.wifidirectchat2
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.net.wifi.p2p.WifiP2pConfig
 import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pManager
 import android.net.wifi.p2p.WifiP2pManager.ActionListener
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -17,7 +20,9 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import com.example.wifidirectchat2.databinding.ActivityMainBinding
 
 /**
@@ -129,11 +134,15 @@ class MainActivity : AppCompatActivity(), WiFiDirectChatApplication.Contract,
      */
     fun resetData() {
         val fragmentList = //DeviceListFragment()
-            fragmentManager
-                .findFragmentById(R.id.frag_list) as DeviceListFragment
+            (supportFragmentManager.findFragmentByTag(DeviceListFragment.TAG)
+                ?: DeviceListFragment()) as DeviceListFragment
+//            fragmentManager
+//                .findFragmentById(R.id.frag_list) as DeviceListFragment
         val fragmentDetails = //DeviceDetailFragment()
-            fragmentManager
-                .findFragmentById(R.id.frag_detail) as DeviceDetailFragment
+            (supportFragmentManager.findFragmentByTag(DeviceDetailFragment.TAG)
+                ?: DeviceDetailFragment()) as DeviceDetailFragment
+//            fragmentManager
+//                .findFragmentById(R.id.frag_detail) as DeviceDetailFragment
         fragmentList.clearPeers()
         fragmentDetails.resetViews()
     }
@@ -148,7 +157,8 @@ class MainActivity : AppCompatActivity(), WiFiDirectChatApplication.Contract,
      * (non-Javadoc)
      * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
      */
-    @SuppressLint("MissingPermission")
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.atn_direct_enable -> {
@@ -171,9 +181,52 @@ class MainActivity : AppCompatActivity(), WiFiDirectChatApplication.Contract,
                     ).show()
                     return true
                 }
-                val fragment = fragmentManager
-                    .findFragmentById(R.id.frag_list) as DeviceListFragment
+//                val fragment = fragmentManager
+//                    .findFragmentById(R.id.frag_list) as DeviceListFragment
+                val fragment: DeviceListFragment =
+                    (supportFragmentManager.findFragmentByTag(DeviceListFragment.TAG)
+                        ?: DeviceListFragment()) as DeviceListFragment
+
                 fragment.onInitiateDiscovery()
+                if (
+                    ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED
+//                    ||
+//                    ActivityCompat.checkSelfPermission(
+//                        this,
+//                        Manifest.permission.NEARBY_WIFI_DEVICES
+//                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    this.requestPermissions(
+                        arrayOf(
+                            Manifest.permission.ACCESS_WIFI_STATE,
+                            Manifest.permission.CHANGE_WIFI_STATE,
+                            Manifest.permission.INTERNET,
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.NEARBY_WIFI_DEVICES,
+//                            "android.permission.NEARBY_WIFI_DEVICES",
+                            Manifest.permission.CHANGE_NETWORK_STATE,
+                            Manifest.permission.READ_PHONE_STATE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        ), 1
+                    )
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    Toast.makeText(
+                        this@MainActivity,
+                        "No permission : 1.... requesting",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return false
+                }
                 manager.discoverPeers(channel, object : WifiP2pManager.ActionListener {
                     override fun onSuccess() {
                         Toast.makeText(
@@ -197,6 +250,27 @@ class MainActivity : AppCompatActivity(), WiFiDirectChatApplication.Contract,
         }
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        var i = 0
+        for (permission in permissions) {
+
+            val result = ActivityCompat.checkSelfPermission(
+                this,
+                permission
+            )
+            Toast.makeText(
+                this@MainActivity,
+                "permission request: $permission result: ${grantResults[i++]} $result",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
+    }
 
     override fun showDetails(device: WifiP2pDevice?) {
         val fragment = fragmentManager
@@ -204,8 +278,29 @@ class MainActivity : AppCompatActivity(), WiFiDirectChatApplication.Contract,
         fragment.showDetails(device!!)
     }
 
-    @SuppressLint("MissingPermission")
     override fun connect(config: WifiP2pConfig?) {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.NEARBY_WIFI_DEVICES
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            Toast.makeText(
+                this@MainActivity,
+                "No permissions : 2",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
         manager.connect(channel, config, object : ActionListener {
             override fun onSuccess() {
                 // WiFiDirectBroadcastReceiver will notify us. Ignore for now.

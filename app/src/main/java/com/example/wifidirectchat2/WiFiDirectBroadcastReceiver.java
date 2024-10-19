@@ -19,12 +19,17 @@ package com.example.wifidirectchat2;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.NetworkInfo;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
 import android.util.Log;
+import android.widget.Toast;
+
+import androidx.core.app.ActivityCompat;
+
 /**
  * A BroadcastReceiver that notifies of important wifi p2p events.
  */
@@ -32,9 +37,10 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
     private WifiP2pManager manager;
     private Channel channel;
     private MainActivity activity;
+
     /**
-     * @param manager WifiP2pManager system service
-     * @param channel Wifi p2p channel
+     * @param manager  WifiP2pManager system service
+     * @param channel  Wifi p2p channel
      * @param activity activity associated with the receiver
      */
     public WiFiDirectBroadcastReceiver(WifiP2pManager manager, Channel channel,
@@ -44,6 +50,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
         this.channel = channel;
         this.activity = activity;
     }
+
     /*
      * (non-Javadoc)
      * @see android.content.BroadcastReceiver#onReceive(android.content.Context,
@@ -68,6 +75,25 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
             // asynchronous call and the calling activity is notified with a
             // callback on PeerListListener.onPeersAvailable()
             if (manager != null) {
+                if (
+                        ActivityCompat.checkSelfPermission(activity, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+//                        || ActivityCompat.checkSelfPermission(activity, android.Manifest.permission.NEARBY_WIFI_DEVICES) != PackageManager.PERMISSION_GRANTED
+                   )
+                {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    Toast.makeText(
+                            activity,
+                            "No permissions : 3",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                    return;
+                }
                 manager.requestPeers(channel, (PeerListListener) activity.getFragmentManager()
                         .findFragmentById(R.id.frag_list));
             }
@@ -78,7 +104,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
             }
             NetworkInfo networkInfo = (NetworkInfo) intent
                     .getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
-            if (networkInfo.isConnected()) {
+            if (networkInfo != null & networkInfo.isConnected()) {
                 // we are connected with the other device, request connection
                 // info to find group owner IP
                 DeviceDetailFragment fragment = (DeviceDetailFragment) activity

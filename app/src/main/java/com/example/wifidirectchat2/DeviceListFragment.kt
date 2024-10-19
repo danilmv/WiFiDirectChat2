@@ -23,7 +23,7 @@ import android.widget.TextView
  */
 class DeviceListFragment : ListFragment(), PeerListListener {
     private val peers: MutableList<WifiP2pDevice> = ArrayList()
-    var progressDialog: ProgressDialog? = null
+//    var progressDialog: ProgressDialog? = null
     var mContentView: View? = null
 
     /**
@@ -104,9 +104,9 @@ class DeviceListFragment : ListFragment(), PeerListListener {
     }
 
     override fun onPeersAvailable(peerList: WifiP2pDeviceList) {
-        if (progressDialog != null && progressDialog!!.isShowing) {
-            progressDialog!!.dismiss()
-        }
+//        if (progressDialog != null && progressDialog!!.isShowing) {
+//            progressDialog!!.dismiss()
+//        }
         peers.clear()
         peers.addAll(peerList.deviceList)
         (listAdapter as WiFiPeerListAdapter).notifyDataSetChanged()
@@ -125,13 +125,13 @@ class DeviceListFragment : ListFragment(), PeerListListener {
      *
      */
     fun onInitiateDiscovery() {
-        if (progressDialog != null && progressDialog!!.isShowing) {
-            progressDialog!!.dismiss()
-        }
-        progressDialog = ProgressDialog.show(
-            activity, "Press back to cancel", "finding peers", true,
-            true
-        ) { }
+//        if (progressDialog != null && progressDialog!!.isShowing) {
+//            progressDialog!!.dismiss()
+//        }
+//        progressDialog = ProgressDialog.show(
+//            activity, "Press back to cancel", "finding peers", true,
+//            true
+//        ) { }
     }
 
     /**
@@ -146,6 +146,7 @@ class DeviceListFragment : ListFragment(), PeerListListener {
     }
 
     companion object {
+        const val TAG = "DeviceListFragment"
         private fun getDeviceStatus(deviceStatus: Int): String {
             Log.d(MainActivity.TAG, "Peer status :$deviceStatus")
             return when (deviceStatus) {

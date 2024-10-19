@@ -248,6 +248,7 @@ class DeviceDetailFragment : Fragment(), ConnectionInfoListener {
     }
 
     companion object {
+        const val TAG = "DeviceDetailFragment"
         protected const val CHOOSE_FILE_RESULT_CODE: Int = 20
         @JvmStatic
         fun copyFile(inputStream: InputStream, out: OutputStream): Boolean {

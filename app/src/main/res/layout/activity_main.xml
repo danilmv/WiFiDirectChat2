@@ -15,22 +15,26 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         >
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="150dp">
         <FrameLayout
             android:id="@+id/frag_list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="300dp"
+            android:layout_height="150dp"
+            android:maxHeight="100dp"
             android:background="@color/cardview_light_background"
             android:backgroundTint="@color/cardview_light_background">
         </FrameLayout>
+        </ScrollView>
         <ScrollView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
         <FrameLayout
             android:id="@+id/frag_detail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="200dp"
+            android:maxHeight="100dp"
             >
         </FrameLayout>
         </ScrollView>
@@ -39,9 +43,7 @@
     <FrameLayout
         android:id="@+id/frame_text"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:minHeight="100dp"
-        android:maxHeight="100dp"
+        android:layout_height="100dp"
         app:layout_constraintBottom_toTopOf="@+id/edit_text_message"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

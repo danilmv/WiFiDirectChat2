@@ -64,8 +64,8 @@ class DeviceListAdapter : Adapter<DeviceListAdapter.DeviceListViewHolder>() {
 
     fun updateList(peers: WifiP2pDeviceList) {
         Log.d(TAG, "data set: size: ${peers.deviceList.size} data size: ${data.size}")
-//        data = peers.deviceList.toMutableList()
-        data.addAll(peers.deviceList.toMutableList())
+        data = peers.deviceList.toMutableList()
+//        data.addAll(peers.deviceList.toMutableList())
 
         data.forEach {
             Log.d(TAG, "updateList: new peer: ${it.deviceName}")

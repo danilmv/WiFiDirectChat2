@@ -23,15 +23,17 @@
             android:background="@color/cardview_light_background"
             android:backgroundTint="@color/cardview_light_background">
         </FrameLayout>
+        <ScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
         <FrameLayout
             android:id="@+id/frag_detail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="200dp"
-            android:background="@color/red"
-            android:backgroundTint="@color/red"
             >
         </FrameLayout>
+        </ScrollView>
     </LinearLayout>
 
     <FrameLayout

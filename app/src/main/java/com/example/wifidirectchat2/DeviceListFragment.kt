@@ -1,5 +1,6 @@
 package com.example.wifidirectchat2
 
+import android.app.Activity
 import android.app.ListFragment
 import android.app.ProgressDialog
 import android.content.Context
@@ -15,6 +16,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.TextView
+import kotlin.math.log
 
 
 /**
@@ -23,7 +25,8 @@ import android.widget.TextView
  */
 class DeviceListFragment : ListFragment(), PeerListListener {
     private val peers: MutableList<WifiP2pDevice> = ArrayList()
-//    var progressDialog: ProgressDialog? = null
+
+    //    var progressDialog: ProgressDialog? = null
     var mContentView: View? = null
 
     /**
@@ -33,8 +36,29 @@ class DeviceListFragment : ListFragment(), PeerListListener {
         private set
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
+        Log.d(TAG, "onActivityCreated: ")
         super.onActivityCreated(savedInstanceState)
         this.listAdapter = WiFiPeerListAdapter(activity, R.layout.row_devices, peers)
+    }
+
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        Log.d(TAG, "onViewCreated: ")
+        super.onViewCreated(view, savedInstanceState)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(TAG, "onCreate: ")
+        super.onCreate(savedInstanceState)
+    }
+
+    override fun onAttach(activity: Activity?) {
+        Log.d(TAG, "onAttach: activity")
+        super.onAttach(activity)
+    }
+
+    override fun onAttach(context: Context?) {
+        Log.d(TAG, "onAttach: context")
+        super.onAttach(context)
     }
 
     override fun onCreateView(
@@ -42,6 +66,7 @@ class DeviceListFragment : ListFragment(), PeerListListener {
         container: ViewGroup?,
         savedInstanceState: Bundle
     ): View? {
+        Log.d(TAG, "onCreateView: ")
         mContentView = inflater.inflate(R.layout.device_list, null)
         return mContentView
     }
@@ -51,6 +76,7 @@ class DeviceListFragment : ListFragment(), PeerListListener {
      */
     override fun onListItemClick(l: ListView, v: View, position: Int, id: Long) {
         val device = listAdapter.getItem(position) as WifiP2pDevice
+        Log.d(TAG, "onListItemClick: ${device.deviceName}")
         (activity as DeviceActionListener).showDetails(device)
     }
 
@@ -96,6 +122,8 @@ class DeviceListFragment : ListFragment(), PeerListListener {
      * @param device WifiP2pDevice object
      */
     fun updateThisDevice(device: WifiP2pDevice) {
+        Log.d(TAG, "updateThisDevice: ${device.deviceName}")
+        if (mContentView == null) return
         this.device = device
         var view = mContentView!!.findViewById<View>(R.id.my_name) as TextView
         view.text = device.deviceName
@@ -104,11 +132,16 @@ class DeviceListFragment : ListFragment(), PeerListListener {
     }
 
     override fun onPeersAvailable(peerList: WifiP2pDeviceList) {
+        peers.clear()
+        peers.addAll(peerList.deviceList)
+
+        Log.d(TAG, "onPeersAvailable: listAdepter = $listAdapter peers: ${peers.size}")
+
+        if (listAdapter == null) return
 //        if (progressDialog != null && progressDialog!!.isShowing) {
 //            progressDialog!!.dismiss()
 //        }
-        peers.clear()
-        peers.addAll(peerList.deviceList)
+
         (listAdapter as WiFiPeerListAdapter).notifyDataSetChanged()
         if (peers.size == 0) {
             Log.d(MainActivity.TAG, "No devices found")
@@ -117,14 +150,17 @@ class DeviceListFragment : ListFragment(), PeerListListener {
     }
 
     fun clearPeers() {
+        Log.d(TAG, "clearPeers: ")
         peers.clear()
-        (listAdapter as WiFiPeerListAdapter).notifyDataSetChanged()
+        if (listAdapter != null)
+            (listAdapter as WiFiPeerListAdapter).notifyDataSetChanged()
     }
 
     /**
      *
      */
-    fun onInitiateDiscovery() {
+    fun onInitiateDiscovery(context: Context) {
+        Log.d(TAG, "onInitiateDiscovery: ")
 //        if (progressDialog != null && progressDialog!!.isShowing) {
 //            progressDialog!!.dismiss()
 //        }
@@ -132,6 +168,9 @@ class DeviceListFragment : ListFragment(), PeerListListener {
 //            activity, "Press back to cancel", "finding peers", true,
 //            true
 //        ) { }
+        if (listAdapter == null)
+            this.listAdapter = WiFiPeerListAdapter(context, R.layout.row_devices, peers)
+//            this.listAdapter = WiFiPeerListAdapter(activity, R.layout.row_devices, peers)
     }
 
     /**

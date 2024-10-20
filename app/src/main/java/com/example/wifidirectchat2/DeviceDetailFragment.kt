@@ -62,6 +62,7 @@ class DeviceDetailFragment : Fragment(), ConnectionInfoListener {
         container: ViewGroup?,
         savedInstanceState: Bundle
     ): View? {
+        Log.d(TAG, "onCreateView: ")
         mContentView = inflater.inflate(R.layout.device_detail, null)
         mContentView!!.findViewById<Button>(R.id.btn_connect).setOnClickListener {
             val config = WifiP2pConfig()
@@ -101,6 +102,7 @@ class DeviceDetailFragment : Fragment(), ConnectionInfoListener {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+        Log.d(TAG, "onActivityResult: ")
         // User has picked an image. Transfer it to group owner i.e peer using
         // FileTransferService.
         val uri = data.data
@@ -122,6 +124,7 @@ class DeviceDetailFragment : Fragment(), ConnectionInfoListener {
     }
 
     override fun onConnectionInfoAvailable(info: WifiP2pInfo) {
+        Log.d(TAG, "onConnectionInfoAvailable: ")
         if (progressDialog != null && progressDialog!!.isShowing) {
             progressDialog!!.dismiss()
         }
@@ -163,6 +166,7 @@ class DeviceDetailFragment : Fragment(), ConnectionInfoListener {
      * @param device the device to be displayed
      */
     fun showDetails(device: WifiP2pDevice) {
+        Log.d(TAG, "showDetails: ${device.deviceName}")
         this.device = device
         this.view!!.visibility = View.VISIBLE
         var view = mContentView!!.findViewById<View>(R.id.device_address) as TextView
@@ -175,6 +179,9 @@ class DeviceDetailFragment : Fragment(), ConnectionInfoListener {
      * Clears the UI fields after a disconnect or direct mode disable operation.
      */
     fun resetViews() {
+        Log.d(TAG, "resetViews: ")
+        if (mContentView == null) return
+
         mContentView!!.findViewById<View>(R.id.btn_connect).visibility =
             View.VISIBLE
         var view = mContentView!!.findViewById<View>(R.id.device_address) as TextView
@@ -198,6 +205,7 @@ class DeviceDetailFragment : Fragment(), ConnectionInfoListener {
         AsyncTask<Void?, Void?, String?>() {
         @SuppressLint("StaticFieldLeak")
         private val statusText = statusText as TextView
+
         @Deprecated("Deprecated in Java")
         override fun doInBackground(vararg params: Void?): String? {
             try {
@@ -229,6 +237,7 @@ class DeviceDetailFragment : Fragment(), ConnectionInfoListener {
          * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
          */
         override fun onPostExecute(result: String?) {
+            Log.d(TAG, "onPostExecute: ")
             if (result != null) {
                 statusText.text = "File copied - $result"
                 val intent = Intent()
@@ -243,6 +252,7 @@ class DeviceDetailFragment : Fragment(), ConnectionInfoListener {
          * @see android.os.AsyncTask#onPreExecute()
          */
         override fun onPreExecute() {
+            Log.d(TAG, "onPreExecute: ")
             statusText.text = "Opening a server socket"
         }
     }
@@ -250,6 +260,7 @@ class DeviceDetailFragment : Fragment(), ConnectionInfoListener {
     companion object {
         const val TAG = "DeviceDetailFragment"
         protected const val CHOOSE_FILE_RESULT_CODE: Int = 20
+
         @JvmStatic
         fun copyFile(inputStream: InputStream, out: OutputStream): Boolean {
             val buf = ByteArray(1024)

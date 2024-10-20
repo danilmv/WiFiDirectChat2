@@ -1,7 +1,6 @@
 package com.example.wifidirectchat2
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -32,9 +31,12 @@ import com.example.wifidirectchat2.databinding.ActivityMainBinding
  * The application should also register a BroadcastReceiver for notification of
  * WiFi state related events.
  */
-class MainActivity : AppCompatActivity(), WiFiDirectChatApplication.Contract,
+class MainActivity :
+    AppCompatActivity(),
+    WiFiDirectChatApplication.Contract,
     WifiP2pManager.ChannelListener,
-    DeviceListFragment.DeviceActionListener {
+    NewDeviceListFragment.DeviceActionListener,
+    WiFiDirectBroadcastReceiver.BroadcastContract {
     private lateinit var binding: ActivityMainBinding
     private var handler: Handler? = null
 
@@ -46,10 +48,14 @@ class MainActivity : AppCompatActivity(), WiFiDirectChatApplication.Contract,
     private lateinit var manager: WifiP2pManager
     private lateinit var receiver: WiFiDirectBroadcastReceiver
 
-    var isWifiP2pEnabled: Boolean = false
-    var retryChannel = false
+    private var isWifiP2pEnabled: Boolean = false
+    private var retryChannel = false
+
+    private val fragmentList = NewDeviceListFragment()
+    private val fragmentDetail = NewDeviceDetailFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(TAG, "onCreate: ")
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -95,17 +101,31 @@ class MainActivity : AppCompatActivity(), WiFiDirectChatApplication.Contract,
 
         manager = getSystemService(Context.WIFI_P2P_SERVICE) as WifiP2pManager
         channel = manager.initialize(this, mainLooper, null)
+
+        showFragments()
+    }
+
+    private fun showFragments() {
+        Log.d(TAG, "showFragments: ")
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.frag_list, fragmentList)
+            .replace(R.id.frag_detail, fragmentDetail)
+            .commit()
     }
 
     override fun startServer() {
+        Log.d(TAG, "startServer: ")
         TODO("Not yet implemented")
     }
 
     override fun showToast(msg: String, length: Int) {
+        Log.d(TAG, "showToast: ")
         Toast.makeText(this, msg, length).show()
     }
 
     override fun requestPermission() {
+        Log.d(TAG, "requestPermission: ")
         TODO("Not yet implemented")
     }
 
@@ -114,17 +134,20 @@ class MainActivity : AppCompatActivity(), WiFiDirectChatApplication.Contract,
     }
 
     override fun onResume() {
+        Log.d(TAG, "onResume: ")
         super.onResume()
         receiver = WiFiDirectBroadcastReceiver(manager, channel, this)
         registerReceiver(receiver, intentFilter)
     }
 
     override fun onPause() {
+        Log.d(TAG, "onPause: ")
         super.onPause()
         unregisterReceiver(receiver)
     }
 
     fun setIsWifiP2pEnabled(isWifiP2pEnabled: Boolean) {
+        Log.d(TAG, "setIsWifiP2pEnabled: $isWifiP2pEnabled")
         this.isWifiP2pEnabled = isWifiP2pEnabled
     }
 
@@ -133,21 +156,25 @@ class MainActivity : AppCompatActivity(), WiFiDirectChatApplication.Contract,
      * BroadcastReceiver receiving a state change event.
      */
     fun resetData() {
-        val fragmentList = //DeviceListFragment()
-            (supportFragmentManager.findFragmentByTag(DeviceListFragment.TAG)
-                ?: DeviceListFragment()) as DeviceListFragment
-//            fragmentManager
-//                .findFragmentById(R.id.frag_list) as DeviceListFragment
-        val fragmentDetails = //DeviceDetailFragment()
-            (supportFragmentManager.findFragmentByTag(DeviceDetailFragment.TAG)
-                ?: DeviceDetailFragment()) as DeviceDetailFragment
-//            fragmentManager
-//                .findFragmentById(R.id.frag_detail) as DeviceDetailFragment
+        Log.d(TAG, "resetData: ")
+//        val fragmentList = //DeviceListFragment()
+////            (supportFragmentManager.findFragmentByTag(DeviceListFragment.TAG)
+////                ?: DeviceListFragment()) as DeviceListFragment
+//            (supportFragmentManager.findFragmentByTag(NewDeviceListFragment.TAG)
+//                ?: NewDeviceListFragment()) as NewDeviceListFragment
+////            fragmentManager
+////                .findFragmentById(R.id.frag_list) as DeviceListFragment
+//        val fragmentDetails = //DeviceDetailFragment()
+//            (supportFragmentManager.findFragmentByTag(DeviceDetailFragment.TAG)
+//                ?: DeviceDetailFragment()) as DeviceDetailFragment
+////            fragmentManager
+////                .findFragmentById(R.id.frag_detail) as DeviceDetailFragment
         fragmentList.clearPeers()
-        fragmentDetails.resetViews()
+        fragmentDetail.resetViews()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        Log.d(TAG, "onCreateOptionsMenu: ")
         val inflater = menuInflater
         inflater.inflate(R.menu.action_items, menu)
         return true
@@ -160,6 +187,7 @@ class MainActivity : AppCompatActivity(), WiFiDirectChatApplication.Contract,
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        Log.d(TAG, "onOptionsItemSelected: ${item.itemId} ")
         when (item.itemId) {
             R.id.atn_direct_enable -> {
                 if (manager != null && channel != null) {
@@ -183,11 +211,11 @@ class MainActivity : AppCompatActivity(), WiFiDirectChatApplication.Contract,
                 }
 //                val fragment = fragmentManager
 //                    .findFragmentById(R.id.frag_list) as DeviceListFragment
-                val fragment: DeviceListFragment =
-                    (supportFragmentManager.findFragmentByTag(DeviceListFragment.TAG)
-                        ?: DeviceListFragment()) as DeviceListFragment
+//                val fragment: NewDeviceListFragment =
+//                    (supportFragmentManager.findFragmentByTag(NewDeviceListFragment.TAG)
+//                        ?: NewDeviceListFragment()) as NewDeviceListFragment
 
-                fragment.onInitiateDiscovery()
+//                fragment.onInitiateDiscovery(this)
                 if (
                     ActivityCompat.checkSelfPermission(
                         this,
@@ -273,12 +301,14 @@ class MainActivity : AppCompatActivity(), WiFiDirectChatApplication.Contract,
     }
 
     override fun showDetails(device: WifiP2pDevice?) {
-        val fragment = fragmentManager
-            .findFragmentById(R.id.frag_detail) as DeviceDetailFragment
-        fragment.showDetails(device!!)
+        Log.d(TAG, "showDetails: ")
+//        val fragment = fragmentManager
+//            .findFragmentById(R.id.frag_detail) as DeviceDetailFragment
+        fragmentDetail.showDetails(device!!)
     }
 
     override fun connect(config: WifiP2pConfig?) {
+        Log.d(TAG, "connect: ")
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -316,21 +346,24 @@ class MainActivity : AppCompatActivity(), WiFiDirectChatApplication.Contract,
     }
 
     override fun disconnect() {
-        val fragment = fragmentManager
-            .findFragmentById(R.id.frag_detail) as DeviceDetailFragment
-        fragment.resetViews()
+        Log.d(TAG, "disconnect:... ")
+//        val fragment = fragmentManager
+//            .findFragmentById(R.id.frag_detail) as DeviceDetailFragment
+//        fragment.resetViews()
         manager.removeGroup(channel, object : ActionListener {
             override fun onFailure(reasonCode: Int) {
                 Log.d(TAG, "Disconnect failed. Reason :$reasonCode")
             }
 
             override fun onSuccess() {
-                fragment.view!!.visibility = View.GONE
+                Log.d(TAG, "disconnect ...successful: ")
+                fragmentDetail.view?.visibility = View.GONE
             }
         })
     }
 
     override fun onChannelDisconnected() {
+        Log.d(TAG, "onChannelDisconnected: ")
         // we will try once more
         if (manager != null && !retryChannel) {
             Toast.makeText(this, "Channel lost. Trying again", Toast.LENGTH_LONG).show()
@@ -347,20 +380,23 @@ class MainActivity : AppCompatActivity(), WiFiDirectChatApplication.Contract,
     }
 
     override fun cancelDisconnect() {
+        Log.d(TAG, "cancelDisconnect: ")
         /*
          * A cancel abort request by user. Disconnect i.e. removeGroup if
          * already connected. Else, request WifiP2pManager to abort the ongoing
          * request
          */
         if (manager != null) {
-            val fragment = fragmentManager
-                .findFragmentById(R.id.frag_list) as DeviceListFragment
-            if (fragment.device == null
-                || fragment.device!!.status == WifiP2pDevice.CONNECTED
+//            val fragment = (supportFragmentManager.findFragmentByTag(NewDeviceListFragment.TAG)
+//                ?: NewDeviceListFragment()) as NewDeviceListFragment
+//                fragmentManager
+//                .findFragmentById(R.id.frag_list) as DeviceListFragment
+            if (fragmentList.thisDevice == null
+                || fragmentList.thisDevice!!.status == WifiP2pDevice.CONNECTED
             ) {
                 disconnect()
-            } else if (fragment.device!!.status == WifiP2pDevice.AVAILABLE
-                || fragment.device!!.status == WifiP2pDevice.INVITED
+            } else if (fragmentList.thisDevice!!.status == WifiP2pDevice.AVAILABLE
+                || fragmentList.thisDevice!!.status == WifiP2pDevice.INVITED
             ) {
                 manager.cancelConnect(channel, object : ActionListener {
                     override fun onSuccess() {
@@ -383,6 +419,9 @@ class MainActivity : AppCompatActivity(), WiFiDirectChatApplication.Contract,
     }
 
     companion object {
-        const val TAG = "MainActivity"
+        const val TAG = "@@MainActivity"
     }
+
+    override fun getListFragment() = fragmentList
+    override fun getDetailFragment() = fragmentDetail
 }

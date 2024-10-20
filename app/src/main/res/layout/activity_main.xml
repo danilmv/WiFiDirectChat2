@@ -8,9 +8,8 @@
     <LinearLayout
         android:id="@+id/linear_Layout"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="0dp"
         android:orientation="vertical"
-        android:minHeight="200dp"
         app:layout_constraintBottom_toTopOf="@id/frame_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -19,12 +18,19 @@
         <FrameLayout
             android:id="@+id/frag_list"
             android:layout_width="match_parent"
-            android:layout_height="100dp">
+            android:layout_height="wrap_content"
+            android:minHeight="300dp"
+            android:background="@color/cardview_light_background"
+            android:backgroundTint="@color/cardview_light_background">
         </FrameLayout>
         <FrameLayout
             android:id="@+id/frag_detail"
             android:layout_width="match_parent"
-            android:layout_height="100dp">
+            android:layout_height="wrap_content"
+            android:minHeight="200dp"
+            android:background="@color/red"
+            android:backgroundTint="@color/red"
+            >
         </FrameLayout>
     </LinearLayout>
 
@@ -32,8 +38,8 @@
         android:id="@+id/frame_text"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:minHeight="200dp"
-        android:maxHeight="200dp"
+        android:minHeight="100dp"
+        android:maxHeight="100dp"
         app:layout_constraintBottom_toTopOf="@+id/edit_text_message"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -42,7 +48,8 @@
         <ScrollView
             android:id="@+id/scroll_text"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:maxHeight="100dp">
 
             <TextView
                 android:id="@+id/text_view_text"

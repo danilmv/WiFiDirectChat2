@@ -63,7 +63,7 @@ class WiFiDirectBroadcastReceiver
                 activity.setIsWifiP2pEnabled(false)
                 activity.resetData()
             }
-            Log.d(MainActivity.TAG, "P2P state changed - $state")
+            Log.d(TAG, "P2P state changed - $state")
         } else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION == action) {
             // request available peers from the wifi p2p manager. This is an
             // asynchronous call and the calling activity is notified with a
@@ -102,7 +102,7 @@ class WiFiDirectBroadcastReceiver
 //                    activity.fragmentManager.findFragmentById(R.id.frag_list) as PeerListListener
                 )
             }
-            Log.d(MainActivity.TAG, "P2P peers changed")
+            Log.d(TAG, "P2P peers changed")
         } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION == action) {
             if (manager == null) {
                 return

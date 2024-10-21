@@ -36,7 +36,7 @@ class DeviceListAdapter : Adapter<DeviceListAdapter.DeviceListViewHolder>() {
 
         @SuppressLint("SetTextI18n")
         fun bind(device: WifiP2pDevice) {
-            Log.d(TAG, "bind: ${device.deviceName}")
+//            Log.d(TAG, "bind: ${device.deviceName}")
             this.device = device
             textName.text = device.deviceName
             textStatus.text = device.status.toString()
@@ -44,7 +44,7 @@ class DeviceListAdapter : Adapter<DeviceListAdapter.DeviceListViewHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceListViewHolder {
-        Log.d(TAG, "onCreateViewHolder: ")
+//        Log.d(TAG, "onCreateViewHolder: ")
 //        return DeviceListViewHolder(DeviceBinding.inflate(LayoutInflater.from(parent.context)))
 
         return DeviceListViewHolder(
@@ -53,12 +53,12 @@ class DeviceListAdapter : Adapter<DeviceListAdapter.DeviceListViewHolder>() {
     }
 
     override fun getItemCount(): Int {
-        Log.d(TAG, "getItemCount: ${data.size}")
+//        Log.d(TAG, "getItemCount: ${data.size}")
         return data.size
     }
 
     override fun onBindViewHolder(holder: DeviceListViewHolder, position: Int) {
-        Log.d(TAG, "onBindViewHolder: ")
+//        Log.d(TAG, "onBindViewHolder: ")
         holder.bind(data[position])
     }
 
@@ -67,11 +67,11 @@ class DeviceListAdapter : Adapter<DeviceListAdapter.DeviceListViewHolder>() {
         data = peers.deviceList.toMutableList()
 //        data.addAll(peers.deviceList.toMutableList())
 
-        data.forEach {
-            Log.d(TAG, "updateList: new peer: ${it.deviceName}")
-        }
-
-        Log.d(TAG, "updateList: ... data size: ${data.size}....")
+//        data.forEach {
+//            Log.d(TAG, "updateList: new peer: ${it.deviceName}")
+//        }
+//
+//        Log.d(TAG, "updateList: ... data size: ${data.size}....")
         notifyDataSetChanged()
     }
 

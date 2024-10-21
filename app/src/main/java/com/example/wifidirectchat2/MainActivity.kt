@@ -23,6 +23,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.wifidirectchat2.databinding.ActivityMainBinding
+import java.net.InetAddress
 
 /**
  * An activity that uses WiFi Direct APIs to discover and connect with available
@@ -73,18 +74,18 @@ class MainActivity :
         binding.buttonSend.setOnClickListener {
             val message = binding.editTextMessage.text.toString()
             binding.textViewText.append("me: ${message}\n")
-            app.sendMessage(message)
+            app.sendAll(message)
 
             binding.editTextMessage.text.clear()
         }
 
-        binding.buttonStart.setOnClickListener {
-            app.startServer(this)
-        }
-
-        binding.buttonJoin.setOnClickListener {
-            app.join(this)
-        }
+//        binding.buttonStart.setOnClickListener {
+//            app.startServer(this)
+//        }
+//
+//        binding.buttonJoin.setOnClickListener {
+//            app.join(this)
+//        }
 
 
         // Indicates a change in the Wi-Fi Direct status.
@@ -116,7 +117,12 @@ class MainActivity :
 
     override fun startServer() {
         Log.d(TAG, "startServer: ")
-        TODO("Not yet implemented")
+        app.startServer(this)
+    }
+
+    override fun join(address: String) {
+        Log.d(TAG, "join: ")
+        app.join(this, address)
     }
 
     override fun showToast(msg: String, length: Int) {
@@ -144,6 +150,11 @@ class MainActivity :
         Log.d(TAG, "onPause: ")
         super.onPause()
         unregisterReceiver(receiver)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        app.stop()
     }
 
     fun setIsWifiP2pEnabled(isWifiP2pEnabled: Boolean) {
@@ -312,10 +323,12 @@ class MainActivity :
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.NEARBY_WIFI_DEVICES
             ) != PackageManager.PERMISSION_GRANTED
+//            ||
+//            ActivityCompat.checkSelfPermission(
+//                this,
+//                Manifest.permission.NEARBY_WIFI_DEVICES
+//            ) != PackageManager.PERMISSION_GRANTED
         ) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -333,10 +346,12 @@ class MainActivity :
         }
         manager.connect(channel, config, object : ActionListener {
             override fun onSuccess() {
+                Log.d(TAG, "onSuccess: ")
                 // WiFiDirectBroadcastReceiver will notify us. Ignore for now.
             }
 
             override fun onFailure(reason: Int) {
+                Log.d(TAG, "onFailure: ")
                 Toast.makeText(
                     this@MainActivity, "Connect failed. Retry.",
                     Toast.LENGTH_SHORT

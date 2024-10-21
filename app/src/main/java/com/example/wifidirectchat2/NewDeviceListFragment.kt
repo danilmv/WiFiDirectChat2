@@ -14,6 +14,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.net.InetAddress
 
 class NewDeviceListFragment : Fragment(), WifiP2pManager.PeerListListener,
     DeviceListAdapter.OnItemClickListener {
@@ -95,6 +96,8 @@ class NewDeviceListFragment : Fragment(), WifiP2pManager.PeerListListener,
         fun cancelDisconnect()
         fun connect(config: WifiP2pConfig?)
         fun disconnect()
+        fun startServer()
+        fun join(address: String)
     }
 
     override fun onItemClick(device: WifiP2pDevice) {

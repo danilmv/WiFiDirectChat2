@@ -66,8 +66,9 @@ class MainActivity :
             val source: String = if (it.what == 2) "server" else "client"
             val length = it.arg1
             if (length <= 0) return@Handler true
-            val msg: ByteArray = it.obj as ByteArray
-            binding.textViewText.append("$source: ${String(msg)}\n")
+//            val msg: ByteArray = it.obj as ByteArray
+            val msg: String = it.obj as String
+            binding.textViewText.append("$source: ${msg}\n")
             return@Handler true
         }
 

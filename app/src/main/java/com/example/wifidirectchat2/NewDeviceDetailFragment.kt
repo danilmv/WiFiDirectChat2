@@ -69,7 +69,7 @@ class NewDeviceDetailFragment : Fragment(), WifiP2pManager.ConnectionInfoListene
     }
 
     override fun onConnectionInfoAvailable(info: WifiP2pInfo?) {
-        Log.d(TAG, "onConnectionInfoAvailable: ")
+        Log.d(TAG, "onConnectionInfoAvailable: ${info?.groupOwnerAddress} ${info?.groupOwnerAddress?.hostAddress} ${info?.groupOwnerAddress?.address}")
         this.info = info
         view?.visibility = View.VISIBLE
         // The owner IP is now known.
